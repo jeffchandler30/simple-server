@@ -1,0 +1,96 @@
+<!-- LINT.IfChange -->
+<html>
+  <head>
+    <style>
+      .video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100;
+        border: black
+      }
+  </style>
+  </head>
+  <body>
+    <div id="player" class="video" frameborder="0"></div>
+     <div id="state"></div> 
+    </div>
+    <script>
+      let log = "Start<br>"
+
+      // Set up iframes using API.
+      const tag = document.createElement("script");
+
+      let params = (new URL(document.location)).searchParams;
+      let videoId = params.get("videoId");
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      document.getElementById("state").innerHTML = log;
+
+      let player;
+      function onYouTubeIframeAPIReady() {
+
+        let defaultConfig = {
+          videoId: "Wu_mrJBcmtw",
+          width: "100%",
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            playsinline: 1
+          },
+          events: {
+              'onReady': onPlayerReady,
+              'onStateChange': onPlayerStateChange,
+              'onError': onPlayerError
+            }
+        };
+
+        createOrUpdatePlayer(defaultConfig);
+      }
+
+      /**
+       * Creates a new player or updates existing player using given player configs.
+       * @param {obj} playerconfig used to pass configuration properties to the player.
+       */
+      function createOrUpdatePlayer(playerConfig) {
+        if (!playerConfig) throw "player config can not be empty";
+
+        const container = document.getElementById("player").parentNode;
+
+        const newPlayer = document.createElement("div");
+        newPlayer.setAttribute("id", "player");
+
+        container.replaceChild(newPlayer, document.getElementById("player"));
+    
+        console.log("Creating new player", playerConfig)
+        player = new YT.Player("player", playerConfig);
+        log += "Player created<br>"
+        document.getElementById("state").innerHTML = log;
+      }
+
+      function onPlayerReady(event) {
+
+        log += "Player ready:<br>"
+        document.getElementById("state").innerHTML = log;
+      }
+
+      function onPlayerError(event) {
+        log += "Player error: " + event.data + "<br>"
+        document.getElementById("state").innerHTML = log;
+      }
+
+      function onPlayerStateChange(event) {
+        log += "Player state: " + event.data + "<br>"
+        document.getElementById("state").innerHTML = log;
+
+      }
+
+    </script>
+  </body>
+</html>
+<!-- LINT.ThenChange(//depot/google3/video/youtube/web/embedded_player/appspot/pfp_test_appspot/templates/iframe_api_demo.html) -->
+
